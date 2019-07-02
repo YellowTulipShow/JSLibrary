@@ -62,88 +62,131 @@
         })();
     </script>
 
-    <script type="text/javascript">
-        (function(argument) {
-            function Person(name) {
-                this.name = name;
-            };
-            Person.prototype = {
-                getName: function() {
-                    return this.name;
-                }
-            };
-            var p = new Person("ZhangSan");
-            console.log(p.constructor);  // false
-            console.log(Person.prototype.constructor); // false
-            console.log(p.constructor.prototype.constructor); // false
-        })()
-    </script>
-
-
     <!-- 定义: -->
     <script type="text/javascript">
         (function() {
-            this.Class = function() {};
-            this.Class.Inherit = function(property) {
+            function deepCopy(p, c) {
+                var c = c || {};
+                for (var i in p) {
+                    if (typeof p[i] === 'object') {
+                        c[i] = (p[i].constructor === Array) ? [] : {};
+                        deepCopy(p[i], c[i]);
+                    } else {
+                        c[i] = p[i];
+                    }
+                }
+                return c;
+            }
+            function Unrealized() {
+                throw "throw Unrealized Method Exception!!!";
+            }
 
+
+            var Class = function() {};
+            Class.Inherit = function(property) {
+                var baseClass = null;
+                if (this !== Class) {
+                    baseClass = this;
+                }
+                function F() {
+                    if (!initializing) {
+                        if (baseClass) {
+                            this._base_ = deepCopy(baseClass.prototype, {});
+                            this._base_.apply(this, arguments);
+                        }
+                        this.__init__.apply(this, arguments);
+                    }
+                }
+                if (baseClass) {
+                    initializing = true;
+                    F.prototype = new baseClass();
+                    F.prototype.constructor = F;
+                    initializing = false;
+                }
+                F.Inherit = arguments.callee;
+
+                for (var name in property) {
+                    if (property.hasOwnProperty(name)) {
+                        F.prototype[name] = deepCopy(property[name]);
+                    }
+                }
+                return F;
             };
+            this.Class = Class;
         })();
     </script>
     <!-- 使用: -->
     <script type="text/javascript">
-        var Person = Class.Inherit({
-            __init__: function(name, age, sex) {
-                this.name = name;
-                this.age = age;
-                this.sex = sex;
-            },
-            getName: function() {
-                return "Person." + this.name;
-            },
-            getAge: function() {
-                return "Person." + this.age;
-            },
-            getSex: function() {
-                return "Person." + this.sex;
-            },
-            speak: function() {
-                var self = this;
-                console.log("我叫:" + self.getName());
-                console.log("今年:" + self.getAge() + "岁");
-                console.log("是" + self.getSex() + "生");
-            },
-        });
+        (function() {
+            var Person = Class.Inherit({
+                __init__: function(name, age, sex) {
+                    this.name = name;
+                    this.age = age;
+                    this.sex = sex;
+                },
+                getName: function() {
+                    return "Person." + this.name;
+                },
+                getAge: function() {
+                    return "Person." + this.age;
+                },
+                getSex: function() {
+                    return "Person." + this.sex;
+                },
+                speak: function() {
+                    var self = this;
+                    console.log("我叫:" + self.getName());
+                    console.log("今年:" + self.getAge() + "岁");
+                    console.log("是" + self.getSex() + "生");
+                },
+            });
+            console.log(Person);
 
-        var Man = Pserson.Inherit({
-            __init__: function(name, age) {
-                this._base_.__init__(name, age, "男");
-            },
-            getName: function() {
-                return "君子." + this.name;
-            },
-            motion: function() {
-                console.log("男人好运动, 一身臭汗~~~");
-            },
-            speak: function() {
-                var self = this;
-                self.speak();
-                self.motion();
-                console.log("男人名称好虚伪的以君子自居, 但真实姓名是:" + self._base_.)
-            },
-        });
+            var Man = Person.Inherit({
+                __init__: function(name, age) {
+                    this._base_.__init__(name, age, "男");
+                },
+                getName: function() {
+                    return "君子." + this.name;
+                },
+                motion: function() {
+                    console.log("男人好运动, 一身臭汗~~~");
+                },
+                speak: function() {
+                    var self = this;
+                    self._base_.speak();
+                    self.motion();
+                    console.log("男人名称好虚伪的以君子自居, 但真实姓名是:" + self._base_.getName());
+                },
+            });
 
-        var WoMan = Pserson.Inherit({
-            __init__: function(name, age) {
-                this.__init__(name, age, "女");
-            },
-            getAge: function() {
-                return "女人说出来的年龄比实际年龄小十岁:" + (this.age - 10);
-            },
-            makeUp: function() {
-                console.log("女人爱化妆, 化妆三小时中...");
-            },
+            var WoMan = Person.Inherit({
+                __init__: function(name, age) {
+                    this.__init__(name, age, "女");
+                },
+                getAge: function() {
+                    return "女人年龄." + (this.age - 10);
+                },
+                makeUp: function() {
+                    console.log("女人爱化妆, 化妆三小时中...");
+                },
+                speak: function() {
+                    var self = this;
+                    self._base_.speak();
+                    self.makeUp();
+                    console.log("女人说出来的年龄比实际年龄小十岁, 但真实年龄是:" + self._base_.getAge());
+                },
+            });
 
-        });
+            var cases = [
+                new Person("张三", 35, "男"),
+                new Man("小明", 18),
+                new Man("志玲", 30),
+            ];
+            for (var i = 0; i < cases.length; i++) {
+                cases[i].speak();
+            }
+        })();
     </script>
 </body>
 </html>
