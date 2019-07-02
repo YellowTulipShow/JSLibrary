@@ -47,17 +47,103 @@
 </head>
 <body>
     <script type="text/javascript">
-        function Cat(name,color){
-    　　　　this.name = name;
-    　　　　this.color = color;
-    　　}
-        var cat1 = new Cat("大毛", "黄色");
-        var cat2 = new Cat("二毛", "黑色");
-        console.log("答案:" + "大毛" + " " + "cat1:", cat1);
-        console.log("答案:" + "二毛" + " " + "cat2:", cat2);
-        /*
-        case.constructor 指向new 出来实例的构造函数
-        */
+        (function() {
+            function Cat(name,color){
+                this.name = name;
+                this.color = color;
+            }
+            var cat1 = new Cat("大毛", "黄色");
+            var cat2 = new Cat("二毛", "黑色");
+            console.log("答案:" + "大毛" + " " + "cat1:", cat1);
+            console.log("答案:" + "二毛" + " " + "cat2:", cat2);
+            /*
+            case.constructor 指向new 出来实例的构造函数
+            */
+        })();
+    </script>
+
+    <script type="text/javascript">
+        (function(argument) {
+            function Person(name) {
+                this.name = name;
+            };
+            Person.prototype = {
+                getName: function() {
+                    return this.name;
+                }
+            };
+            var p = new Person("ZhangSan");
+            console.log(p.constructor);  // false
+            console.log(Person.prototype.constructor); // false
+            console.log(p.constructor.prototype.constructor); // false
+        })()
+    </script>
+
+
+    <!-- 定义: -->
+    <script type="text/javascript">
+        (function() {
+            this.Class = function() {};
+            this.Class.Inherit = function(property) {
+
+            };
+        })();
+    </script>
+    <!-- 使用: -->
+    <script type="text/javascript">
+        var Person = Class.Inherit({
+            __init__: function(name, age, sex) {
+                this.name = name;
+                this.age = age;
+                this.sex = sex;
+            },
+            getName: function() {
+                return "Person." + this.name;
+            },
+            getAge: function() {
+                return "Person." + this.age;
+            },
+            getSex: function() {
+                return "Person." + this.sex;
+            },
+            speak: function() {
+                var self = this;
+                console.log("我叫:" + self.getName());
+                console.log("今年:" + self.getAge() + "岁");
+                console.log("是" + self.getSex() + "生");
+            },
+        });
+
+        var Man = Pserson.Inherit({
+            __init__: function(name, age) {
+                this._base_.__init__(name, age, "男");
+            },
+            getName: function() {
+                return "君子." + this.name;
+            },
+            motion: function() {
+                console.log("男人好运动, 一身臭汗~~~");
+            },
+            speak: function() {
+                var self = this;
+                self.speak();
+                self.motion();
+                console.log("男人名称好虚伪的以君子自居, 但真实姓名是:" + self._base_.)
+            },
+        });
+
+        var WoMan = Pserson.Inherit({
+            __init__: function(name, age) {
+                this.__init__(name, age, "女");
+            },
+            getAge: function() {
+                return "女人说出来的年龄比实际年龄小十岁:" + (this.age - 10);
+            },
+            makeUp: function() {
+                console.log("女人爱化妆, 化妆三小时中...");
+            },
+
+        });
     </script>
 </body>
 </html>

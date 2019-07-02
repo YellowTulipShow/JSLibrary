@@ -53,3 +53,13 @@ alert(cat2 instanceof Cat); // true
 ### prototype 属性
 
 Javascript规定，每一个构造函数都有一个 `prototype` 属性，指向另一个对象。这个对象的所有属性和方法，都会被构造函数的实例继承。
+
+### 全局时使用 this === window
+```js
+(function() {
+    console.log("this === window:", this === window);
+    // this === window: true
+})();
+```
+
+###
