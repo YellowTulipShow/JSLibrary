@@ -47,6 +47,7 @@
 </head>
 <body>
     <script type="text/javascript">
+        // 研究过程中的实验学习
         (function() {
             function Cat(name,color){
                 this.name = name;
@@ -56,80 +57,32 @@
             var cat2 = new Cat("二毛", "黑色");
             console.log("答案:" + "大毛" + " " + "cat1:", cat1);
             console.log("答案:" + "二毛" + " " + "cat2:", cat2);
-            /*
-            case.constructor 指向new 出来实例的构造函数
-            */
+            /* case.constructor 指向new 出来实例的构造函数 */
+        })();
+        (function() {
+            // 在浏览器中，this指向全局的 "window" 对象
+            this.x = 9;
+            var module = {
+                x: 81,
+                getX: function(multiple) {
+                    return this.x * multiple;
+                },
+            };
+            console.log("module.getX() === 81:", module.getX(2));
+
+            var retrieveX = module.getX;
+            console.log("retrieveX() === 9:", retrieveX(2));
+            // 返回9 - 因为函数是在全局作用域中调用的
+
+            // 创建一个新函数，把 'this' 绑定到 module 对象
+            // 新手可能会将全局变量 x 与 module 的属性 x 混淆
+            var boundGetX = retrieveX.bind(module);
+            console.log("boundGetX() === 81:", boundGetX(2));
         })();
     </script>
 
     <!-- 定义: -->
-    <script type="text/javascript">
-        (function() {
-            function deepCopy(p, c) {
-                var c = c || {};
-                for (var i in p) {
-                    if (typeof p[i] === 'object') {
-                        c[i] = (p[i].constructor === Array) ? [] : {};
-                        deepCopy(p[i], c[i]);
-                    } else {
-                        c[i] = p[i];
-                    }
-                }
-                return c;
-            }
-            function Unrealized() {
-                throw "throw Unrealized Method Exception!!!";
-            }
-
-
-            var Class = function() {};
-            Class.Inherit = function(property) {
-                var baseF = this !== Class ? this : null;
-                function F() {
-                    if (!initializing) {
-                        if (baseF) {
-                            this._base_ = deepCopy(baseF.prototype, {});
-                        }
-                        this.__init__.apply(this, arguments);
-                    }
-                }
-                if (baseF) {
-                    initializing = true;
-                    var baseFcase = new baseF();
-                    F.prototype = baseFcase;
-                    F.prototype._base_ = baseFcase;
-                    F.prototype.constructor = F;
-                    initializing = false;
-                }
-                F.Inherit = arguments.callee;
-
-                for (var name in property) {
-                    if (!property.hasOwnProperty(name)) {
-                        console.log("not has:", name);
-                        continue;
-                    }
-                    console.log("has:", name);
-
-                    // var is_func = typeof (property[name]) === "function";
-                    // var is_pro_func = typeof (F.prototype[name]) === "function";
-                    // var is_base_func = /\b_base_\b/.test(property[name]);
-                    // if (baseF && is_func && is_pro_func) {
-                    //     F.prototype[name] = (function(name, fn) {
-                    //         return function() {
-                    //             return fn.apply(this, arguments);
-                    //         };
-                    //     })(name, property[name]);
-                    // } else {
-                    //     F.prototype[name] = property[name];
-                    // }
-                    // continue;
-                    F.prototype[name] = property[name];
-                }
-                return F;
-            };
-            this.Class = Class;
-        })();
-    </script>
+    <script type="text/javascript" src="Class.Inherit.js"></script>
     <!-- 使用: -->
     <script type="text/javascript">
         (function() {
@@ -170,7 +123,14 @@
                 },
                 speak: function() {
                     var self = this;
+                    console.log("男人将名字改为:关羽, 然后说话");
+                    self.name = "关羽";
                     self._base_.speak();
+
+                    console.log("男人将名字改为:图奇, 然后说话");
+                    self.name = "图奇";
+                    self._base_.speak();
+
                     self.motion();
                     console.log("男人名称好虚伪的以君子自居, 但真实姓名是:" + self._base_.getName());
                 },
@@ -180,6 +140,7 @@
                 __init__: function(name, age) {
                     console.log("exe WoMan.__init__();");
                     this._base_.__init__(name, age, "女");
+                    this.name = "漂亮的女孩" + this.name;
                 },
                 getAge: function() {
                     return "女人年龄." + (this.age - 10);
@@ -208,6 +169,7 @@
             ];
             console.log("");
             for (var i = 0; i < cases.length; i++) {
+                console.log(cases[i]);
                 cases[i].speak();
                 console.log("");
             }
