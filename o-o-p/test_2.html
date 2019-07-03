@@ -84,31 +84,46 @@
 
             var Class = function() {};
             Class.Inherit = function(property) {
-                var baseClass = null;
-                if (this !== Class) {
-                    baseClass = this;
-                }
+                var baseF = this !== Class ? this : null;
                 function F() {
                     if (!initializing) {
-                        if (baseClass) {
-                            this._base_ = deepCopy(baseClass.prototype, {});
-                            this._base_.apply(this, arguments);
+                        if (baseF) {
+                            this._base_ = deepCopy(baseF.prototype, {});
                         }
                         this.__init__.apply(this, arguments);
                     }
                 }
-                if (baseClass) {
+                if (baseF) {
                     initializing = true;
-                    F.prototype = new baseClass();
+                    var baseFcase = new baseF();
+                    F.prototype = baseFcase;
+                    F.prototype._base_ = baseFcase;
                     F.prototype.constructor = F;
                     initializing = false;
                 }
                 F.Inherit = arguments.callee;
 
                 for (var name in property) {
-                    if (property.hasOwnProperty(name)) {
-                        F.prototype[name] = deepCopy(property[name]);
+                    if (!property.hasOwnProperty(name)) {
+                        console.log("not has:", name);
+                        continue;
                     }
+                    console.log("has:", name);
+
+                    // var is_func = typeof (property[name]) === "function";
+                    // var is_pro_func = typeof (F.prototype[name]) === "function";
+                    // var is_base_func = /\b_base_\b/.test(property[name]);
+                    // if (baseF && is_func && is_pro_func) {
+                    //     F.prototype[name] = (function(name, fn) {
+                    //         return function() {
+                    //             return fn.apply(this, arguments);
+                    //         };
+                    //     })(name, property[name]);
+                    // } else {
+                    //     F.prototype[name] = property[name];
+                    // }
+                    // continue;
+                    F.prototype[name] = property[name];
                 }
                 return F;
             };
@@ -120,6 +135,7 @@
         (function() {
             var Person = Class.Inherit({
                 __init__: function(name, age, sex) {
+                    console.log("exe Person.__init__();");
                     this.name = name;
                     this.age = age;
                     this.sex = sex;
@@ -140,10 +156,10 @@
                     console.log("是" + self.getSex() + "生");
                 },
             });
-            console.log(Person);
 
             var Man = Person.Inherit({
                 __init__: function(name, age) {
+                    console.log("exe Man.__init__();");
                     this._base_.__init__(name, age, "男");
                 },
                 getName: function() {
@@ -162,7 +178,8 @@
 
             var WoMan = Person.Inherit({
                 __init__: function(name, age) {
-                    this.__init__(name, age, "女");
+                    console.log("exe WoMan.__init__();");
+                    this._base_.__init__(name, age, "女");
                 },
                 getAge: function() {
                     return "女人年龄." + (this.age - 10);
@@ -178,13 +195,21 @@
                 },
             });
 
+            console.log("\n\n开始测试执行使用代码:")
+
+            console.log("Person:", Person);
+            console.log("Man:", Man);
+            console.log("WoMan:", WoMan);
+
             var cases = [
-                new Person("张三", 35, "男"),
                 new Man("小明", 18),
-                new Man("志玲", 30),
+                new WoMan("志玲", 30),
+                new Person("张三", 35, "男"),
             ];
+            console.log("");
             for (var i = 0; i < cases.length; i++) {
                 cases[i].speak();
+                console.log("");
             }
         })();
     </script>
