@@ -108,11 +108,12 @@
                     console.log("今年:" + self.getAge() + "岁");
                     console.log("是" + self.getSex() + "生");
                 },
-            });
+            }, "Person");
 
             var Man = Person.Inherit({
                 __init__: function(name, age) {
                     console.log("exe Man.__init__();");
+                    console.log(this);
                     this._base_.__init__(name, age, "男");
                 },
                 getName: function() {
@@ -136,7 +137,7 @@
                     self.motion();
                     console.log("男人名称好虚伪的以君子自居, 但真实姓名是:" + self._base_.getName());
                 },
-            });
+            }, "Man");
 
             var WoMan = Person.Inherit({
                 __init__: function(name, age) {
@@ -156,7 +157,7 @@
                     self.makeUp();
                     console.log("女人说出来的年龄比实际年龄小十岁, 但真实年龄是:" + self._base_.getAge());
                 },
-            });
+            }, "WoMan");
 
             var ForceMan = Man.Inherit({
                 __init__: function(name, age) {
@@ -175,7 +176,7 @@
                     // 测试多重父级获取
                     // console.log("人的名称:" + self._base_._base_.getName());
                 },
-            });
+            }, "ForceMan");
 
             console.log("\n\n开始测试执行使用代码:")
 
