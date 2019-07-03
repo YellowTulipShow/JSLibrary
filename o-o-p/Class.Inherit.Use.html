@@ -123,6 +123,8 @@
                 },
                 speak: function() {
                     var self = this;
+                    self._base_.speak();
+
                     console.log("男人将名字改为:关羽, 然后说话");
                     self.name = "关羽";
                     self._base_.speak();
@@ -156,13 +158,34 @@
                 },
             });
 
+            var ForceMan = Man.Inherit({
+                __init__: function(name, age) {
+                    console.log("exe ForceMan.__init__();");
+                    this._base_.__init__(name, age);
+                },
+                getName: function() {
+                    return "猛男." + this.name;
+                },
+                speak: function() {
+                    var self = this;
+                    self._base_.speak();
+                    self.motion();
+                    console.log("猛男的名称:" + self.getName());
+                    console.log("君子的名称:" + self._base_.getName());
+                    // 测试多重父级获取
+                    // console.log("人的名称:" + self._base_._base_.getName());
+                },
+            });
+
             console.log("\n\n开始测试执行使用代码:")
 
             console.log("Person:", Person);
             console.log("Man:", Man);
             console.log("WoMan:", WoMan);
+            console.log("ForceMan:", WoMan);
 
             var cases = [
+                new ForceMan("吕布", 23),
                 new Man("小明", 18),
                 new WoMan("志玲", 30),
                 new Person("张三", 35, "男"),

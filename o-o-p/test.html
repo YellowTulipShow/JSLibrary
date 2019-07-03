@@ -122,5 +122,119 @@
         dog1.call();
         cat3.call();
     </script>
+    <script type="text/javascript">
+        (function() {
+            var Person = Class.extend({
+                __init__: function(name, age, sex) {
+                    console.log("exe Person.__init__();");
+                    this.name = name;
+                    this.age = age;
+                    this.sex = sex;
+                },
+                getName: function() {
+                    return "Person." + this.name;
+                },
+                getAge: function() {
+                    return "Person." + this.age;
+                },
+                getSex: function() {
+                    return "Person." + this.sex;
+                },
+                speak: function() {
+                    var self = this;
+                    console.log("我叫:" + self.getName());
+                    console.log("今年:" + self.getAge() + "岁");
+                    console.log("是" + self.getSex() + "生");
+                },
+            });
+
+            var Man = Person.extend({
+                __init__: function(name, age) {
+                    console.log("exe Man.__init__();");
+                    this._base_(name, age, "男");
+                },
+                getName: function() {
+                    return "君子." + this.name;
+                },
+                motion: function() {
+                    console.log("男人好运动, 一身臭汗~~~");
+                },
+                speak: function() {
+                    var self = this;
+                    self._base_();
+
+                    console.log("男人将名字改为:关羽, 然后说话");
+                    self.name = "关羽";
+                    self._base_();
+
+                    console.log("男人将名字改为:图奇, 然后说话");
+                    self.name = "图奇";
+                    self._base_();
+
+                    self.motion();
+                    console.log("男人名称好虚伪的以君子自居, 但真实姓名是:" + self._super_.getName.call(this, ));
+                },
+            });
+
+            var WoMan = Person.extend({
+                __init__: function(name, age) {
+                    console.log("exe WoMan.__init__();");
+                    this._base_(name, age, "女");
+                    this.name = "漂亮的女孩" + this.name;
+                },
+                getAge: function() {
+                    return "女人年龄." + (this.age - 10);
+                },
+                makeUp: function() {
+                    console.log("女人爱化妆, 化妆三小时中...");
+                },
+                speak: function() {
+                    var self = this;
+                    self._base_();
+                    self.makeUp();
+                    console.log("女人说出来的年龄比实际年龄小十岁, 但真实年龄是:" + self._super_.getAge.call(this, ));
+                },
+            });
+
+            var ForceMan = Man.extend({
+                __init__: function(name, age) {
+                    console.log("exe ForceMan.__init__();");
+                    this._base_(name, age);
+                },
+                getName: function() {
+                    return "猛男." + this.name;
+                },
+                speak: function() {
+                    var self = this;
+                    self._base_();
+                    self.motion();
+                    console.log("猛男的名称:" + self.getName());
+                    console.log("君子的名称:" + self._super_.getName.call(this, ));
+                    // 测试多重父级获取
+                    // console.log("人的名称:" + self._base_._base_.getName());
+                },
+            });
+
+            console.log("\n\n开始测试执行使用代码:")
+
+            console.log("Person:", Person);
+            console.log("Man:", Man);
+            console.log("WoMan:", WoMan);
+            console.log("ForceMan:", WoMan);
+
+            var cases = [
+                new ForceMan("吕布", 23),
+                new Man("小明", 18),
+                new WoMan("志玲", 30),
+                new Person("张三", 35, "男"),
+            ];
+            console.log("");
+            for (var i = 0; i < cases.length; i++) {
+                console.log(cases[i]);
+                cases[i].speak();
+                console.log("");
+            }
+        })();
+    </script>
 </body>
 </html>

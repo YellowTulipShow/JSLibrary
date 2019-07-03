@@ -35,7 +35,9 @@
         }
         if (baseF) {
             initializing = true;
-            F.prototype = new baseF();
+            var baseFcase = new baseF();
+            F.prototype = baseFcase;
+            F.prototype._super_ = baseFcase;
             F.prototype.constructor = F;
             initializing = false;
         }
