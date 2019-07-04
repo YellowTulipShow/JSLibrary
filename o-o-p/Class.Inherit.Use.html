@@ -113,7 +113,6 @@
             var Man = Person.Inherit({
                 __init__: function(name, age) {
                     console.log("exe Man.__init__();");
-                    console.log(this);
                     this._base_.__init__(name, age, "男");
                 },
                 getName: function() {
@@ -146,6 +145,7 @@
                     this.name = "漂亮的女孩" + this.name;
                 },
                 getAge: function() {
+                    console.log(this);
                     return "女人年龄." + (this.age - 10);
                 },
                 makeUp: function() {
@@ -174,7 +174,7 @@
                     console.log("猛男的名称:" + self.getName());
                     console.log("君子的名称:" + self._base_.getName());
                     // 测试多重父级获取
-                    // console.log("人的名称:" + self._base_._base_.getName());
+                    console.log("人的名称:" + self._base_._base_.getName());
                 },
             }, "ForceMan");
 
@@ -193,7 +193,7 @@
             ];
             console.log("");
             for (var i = 0; i < cases.length; i++) {
-                console.log(cases[i]);
+                console.log(cases[i]._functionName_, cases[i]);
                 cases[i].speak();
                 console.log("");
             }
