@@ -38,18 +38,29 @@
     var initializing = false;
     function RecursiveBase(chain_array, index, bindBase) {
         initializing = true;
-        var obj = deepCopy({}, chain_array[index].prototype);
+        // var obj = deepCopy({}, chain_array[index].prototype);
+        var obj = new chain_array[index];
+        for (var key in obj) {
+            if (key === "_base_" ||
+                key === "_chain_") {
+                continue;
+            }
+            if (obj.hasOwnProperty(key)) {
+                if (typeof (obj[key]) === "function") {
+                    obj[key] = obj[key].bind(bindBase);
+                }
+            }
+        }
         initializing = false;
         if (index > 0) {
             var _base_ = RecursiveBase(chain_array, index - 1, bindBase);
-            for (var key in _base_) {
-                if (_base_.hasOwnProperty(key)) {
-                    if (typeof (_base_[key]) === "function") {
-                        _base_[key] = _base_[key].bind(bindBase);
-                    }
-                    console.log(_base_, key);
-                }
-            }
+            // for (var key in _base_) {
+            //     if (_base_.hasOwnProperty(key)) {
+            //         if (typeof (_base_[key]) === "function") {
+            //             _base_[key] = _base_[key].bind(bindBase);
+            //         }
+            //     }
+            // }
             obj["_base_"] = _base_;
         }
         return obj;

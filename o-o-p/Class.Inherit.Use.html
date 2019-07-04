@@ -124,14 +124,17 @@
                 speak: function() {
                     var self = this;
                     self._base_.speak();
+                    console.log("");
 
                     console.log("男人将名字改为:关羽, 然后说话");
                     self.name = "关羽";
                     self._base_.speak();
+                    console.log("");
 
                     console.log("男人将名字改为:图奇, 然后说话");
                     self.name = "图奇";
                     self._base_.speak();
+                    console.log("");
 
                     self.motion();
                     console.log("男人名称好虚伪的以君子自居, 但真实姓名是:" + self._base_.getName());
@@ -162,7 +165,7 @@
             var ForceMan = Man.Inherit({
                 __init__: function(name, age) {
                     console.log("exe ForceMan.__init__();");
-                    this._base_.__init__(name, age);
+                    this._base_._base_.__init__(name, age);
                 },
                 getName: function() {
                     return "猛男." + this.name;
@@ -170,10 +173,12 @@
                 speak: function() {
                     var self = this;
                     self._base_.speak();
+                    console.log("");
+                    self._base_._base_.speak();
+                    console.log("");
                     self.motion();
                     console.log("猛男的名称:" + self.getName());
                     console.log("君子的名称:" + self._base_.getName());
-                    // 测试多重父级获取
                     console.log("人的名称:" + self._base_._base_.getName());
                 },
             }, "ForceMan");
