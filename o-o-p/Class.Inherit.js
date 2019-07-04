@@ -5,19 +5,31 @@
     使用看同级目录下的 Class.Inherit.Use.html
 */
 (function() {
-    function deepCopy(p, c, b) {
-        var c = c || {};
-        for (var i in p) {
-            if (typeof p[i] === 'object') {
-                c[i] = (p[i].constructor === Array) ? [] : {};
-                deepCopy(p[i], c[i]);
-            } if (typeof (p[i]) === "function") {
-                c[i] = p[i].bind(b);;
-            } else {
-                c[i] = p[i];
+    function deepCopy(target, sourceProperty, config) {
+        var t = target || {};
+        var s = sourceProperty;
+        var c = config || {
+            base: null,
+            isContinue: function(sourceProperty, key) {},
+        };
+        for (var i in s) {
+            if (c.isContinue && c.isContinue(s, i)) {
+                continue;
             }
+            if (typeof s[i] === 'object') {
+                t[i] = (s[i].constructor === Array) ? [] : {};
+                deepCopy(s[i], t[i], config);
+                continue;
+            }
+            if (typeof (s[i]) === "function") {
+                if (c.base) {
+                    t[i] = s[i].bind(c.base);;
+                    continue;
+                }
+            }
+            t[i] = s[i];
         }
-        return c;
+        return t;
     }
     function Unrealized() {
         throw "throw Unrealized Method Exception!!!";
