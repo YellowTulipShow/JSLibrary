@@ -18,7 +18,7 @@
             }
             if (typeof s[i] === 'object') {
                 t[i] = (s[i].constructor === Array) ? [] : {};
-                deepCopy(s[i], t[i]);
+                deepCopy(s[i], t[i], config);
                 continue;
             }
             if (typeof (s[i]) === "function") {
@@ -35,41 +35,69 @@
     function Unrealized() {
         throw "throw Unrealized Method Exception!!!";
     }
+
+    var initializing = false;
+    function RecursiveBase(chain_array, index, bindBase) {
+        initializing = true;
+        // var obj = deepCopy({}, chain_array[index].prototype);
+        var obj = new chain_array[index];
+        for (var key in obj) {
+            if (key === "_base_" ||
+                key === "_chain_") {
+                continue;
+            }
+            if (obj.hasOwnProperty(key)) {
+                if (typeof (obj[key]) === "function") {
+                    obj[key] = obj[key].bind(bindBase);
+                }
+            }
+        }
+        initializing = false;
+        if (index > 0) {
+            var _base_ = RecursiveBase(chain_array, index - 1, bindBase);
+            // for (var key in _base_) {
+            //     if (_base_.hasOwnProperty(key)) {
+            //         if (typeof (_base_[key]) === "function") {
+            //             _base_[key] = _base_[key].bind(bindBase);
+            //         }
+            //     }
+            // }
+            obj["_base_"] = _base_;
+        }
+        return obj;
+    }
     var Class = function() {};
     Class.Inherit = function(property, functionName) {
-        var baseF = this !== Class ? this : null;
-        function F() {
-            // console.log(this);
-            // this.__init__.apply(this.F, arguments);
-            this.__init__(arguments);
-        }
-        F.Inherit = arguments.callee;
-        F.Inherit = Class.Inherit;
-
-        if (baseF) {
-            F.prototype = deepCopy({}, baseF.prototype);
-            F.prototype.constructor = F;
-            F.prototype._base_ = deepCopy({}, baseF.prototype, {
-                base: F,
-            });
-            F.prototype._base_.constructor = F;
-            for (var key in property) {
-                if (!property.hasOwnProperty(key)) {
-                    continue;
-                }
-                F.prototype[key] = property[key];
-            }
+        var baseF = null;
+        if (this !== Class) {
+            baseF = this;
         } else {
-            F.prototype = property;
-            if (!F.prototype.__init__) {
-                F.prototype.__init__ = function() {};
-            }
-            F.prototype.constructor = F;
-            F.prototype._base_ = {};
-            F.prototype._base_.constructor = F;
+            baseF = function() {};
+            baseF.prototype = {
+                __init__: function() {},
+            };
+            baseF.constructor = baseF;
         }
-        if (functionName) {
-            F.prototype._functionName_ = functionName;
+        function F() {
+            if (!initializing) {
+                this._base_ = RecursiveBase(this._chain_, this._chain_.length - 1, this);
+                this.__init__.apply(this, arguments);
+            }
+        }
+
+        initializing = true;
+        F.prototype = new baseF();
+        F.prototype.constructor = F;
+        initializing = false;
+        var chain = F.prototype._chain_;
+        F.prototype._chain_ = !chain ? new Array() : deepCopy([], chain);
+        F.prototype._chain_.push(baseF);
+        F.prototype._functionName_ = functionName;
+        F.Inherit = arguments.callee;
+        for (var name in property) {
+            if (property.hasOwnProperty(name)) {
+                F.prototype[name] = property[name];
+            }
         }
         F._type_ = F;
         return F;
