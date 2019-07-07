@@ -54,20 +54,32 @@
         }
         return base_list;
     }
+    function GetBase(index) {
+        var self = this;
+        if (typeof this._chain_[index] === "object") {
+            return this._chain_[index];
+        } else if (typeof this._chain_[index] === "function") {
+            initializing = true;
+            this._chain_[index] = new this._chain_[index](self);
+            initializing = false;
+            for (var k in this._chain_[index]) {
+                if (this._chain_[index].hasOwnProperty(k)) {
+                    if (typeof (this._chain_[index][k]) === "function") {
+                        this._chain_[index][k] = this._chain_[index][k].bind(self);
+                    }
+                }
+            }
+        }
+        return this._chain_[index];
+    }
     var Class = function() {};
     Class.Inherit = function(property, functionName) {
         var baseF = null;
         if (this !== Class) {
             baseF = this;
-        // } else {
-        //     baseF = function() {};
-        //     baseF.prototype = {
-        //         __init__: function() {},
-        //     };
-        //     baseF.constructor = baseF;
         }
-        function F() {
-            this._base_ = RecursiveBase(this._chain_, this);
+        function F(callInstance) {
+            this._getBase_ = GetBase.bind(this);
             if (!initializing) {
                 this.__init__.apply(this, arguments);
             }

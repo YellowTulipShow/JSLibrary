@@ -113,7 +113,7 @@
             var Man = Person.Inherit({
                 __init__: function(name, age) {
                     console.log("exe Man.__init__();");
-                    this._base_[0].__init__(name, age, "男");
+                    this._getBase_(0).__init__(name, age, "男");
                 },
                 getName: function() {
                     return "君子." + this.name;
@@ -123,7 +123,7 @@
                 },
                 speak: function() {
                     var self = this;
-                    var base = self._base_[0];
+                    var base = self._getBase_(0);
                     base.speak();
                     console.log("");
 
@@ -145,7 +145,7 @@
             var WoMan = Person.Inherit({
                 __init__: function(name, age) {
                     console.log("exe WoMan.__init__();");
-                    this._base_[0].__init__(name, age, "女");
+                    this._getBase_(0).__init__(name, age, "女");
                     this.name = "漂亮的女孩" + this.name;
                 },
                 getAge: function() {
@@ -157,7 +157,7 @@
                 },
                 speak: function() {
                     var self = this;
-                    var base = self._base_[0];
+                    var base = self._getBase_(0);
                     base.speak();
                     self.makeUp();
                     console.log("女人说出来的年龄比实际年龄小十岁, 但真实年龄是:" + base.getAge());
@@ -167,22 +167,24 @@
             var ForceMan = Man.Inherit({
                 __init__: function(name, age) {
                     console.log("exe ForceMan.__init__();");
-                    this._base_[1].__init__(name, age);
+                    var base = this._getBase_(1);
+                    console.log(base.__init__);
+                    base.__init__(name, age);
                 },
                 getName: function() {
                     return "猛男." + this.name;
                 },
                 speak: function() {
                     var self = this;
-                    var base = self._base_[1];
-                    self._base_[1].speak();
+                    var base = self._getBase_(1);
+                    self._getBase_(1).speak();
                     console.log("");
-                    self._base_[0].speak();
+                    self._getBase_(0).speak();
                     console.log("");
                     self.motion();
                     console.log("猛男的名称:" + self.getName());
-                    console.log("君子的名称:" + self._base_[1].getName());
-                    console.log("人的名称:" + self._base_[0].getName());
+                    console.log("君子的名称:" + self._getBase_(1).getName());
+                    console.log("人的名称:" + self._getBase_(0).getName());
                 },
             }, "ForceMan");
 
