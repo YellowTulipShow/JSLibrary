@@ -70,6 +70,10 @@
 
     console.log('map.ContainsValue(ck):', map.ContainsValue('ck'));
     console.log('map.ContainsValue(/userimg.jpg):', map.ContainsValue('/userimg.jpg'));
+
+    map.Remove('userimg');
+    console.log('map.Remove(userimg): map:', map);
+    console.log('map.Remove(userimg): map.ContainsKey(userimg):', map.ContainsKey('userimg'));
 </script>
 </body>
 </html>

@@ -1,34 +1,46 @@
 function Map() {
-    this.keys = new Array();
-    this.values = new Array();
-
-    this.Keys = function() {};
-    this.Size = function() {};
-    this.ContainsKey = function(key) {};
-    this.ContainsValue = function(value) {};
-
-    //添加键值对
+    this.O = new Object();
+    this.keyLength = 0;
+    // 添加键值对
     this.Set = function (key, value) {
-        if (this.values[key] == null) {//如键不存在则身【键】数组添加键名
-            this.keys.push(value);
-        }
-        this.values[key] = value;//给键赋值
+        this.O[key] = value;
     };
-    //获取键对应的值
+    // 获取键对应的值
     this.Get = function (key) {
-        return this.values[key];
+        return this.O[key];
     };
-    //去除键值，(去除键数据中的键名及对应的值)
+    this.ContainsKey = function(key) {
+        var v = this.Get(key);
+        return v != undefined;
+    };
+    // 去除键值，(去除键数据中的键名及对应的值)
     this.Remove = function (key) {
-        this.keys.remove(key);
-        this.values[key] = null;
+        delete this.O[key];
     };
-    //判断键值元素是否为空
+    // 判断键值元素是否为空
     this.isEmpty = function () {
-        return this.keys.length == 0;
+        return this.Size() == 0;
     };
-    //获取键值元素大小
+    // 获取键值元素大小
     this.Size = function () {
-        return this.keys.length;
+        if (this.keyLength <= 0) {
+            this.keyLength = this.Keys().length;
+        }
+        return this.keyLength;
+    };
+    this.Keys = function () {
+        var keys = new Array();
+        for (var key in this.O) {
+            keys.push(key);
+        }
+        return keys;
+    };
+    this.ContainsValue = function (value) {
+        for (var key in this.O) {
+            if (this.O[key] == value) {
+                return true;
+            }
+        }
+        return false;
     };
 }
